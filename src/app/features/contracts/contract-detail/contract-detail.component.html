@@ -1,0 +1,77 @@
+@if (contract()) {
+<div class="p-6 bg-gray-900 min-h-screen text-white">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+
+        <div class="rounded bg-gray-800 p-6 shadow">
+            <h1 class="mb-2 text-3xl font-bold">{{ contract().title }}</h1>
+            <p class="mb-6 text-gray-400">{{ contract().description }}</p>
+
+            @if (errorMessage()) {
+            <div class="mb-6 rounded-lg border border-red-700 bg-red-950/40 px-4 py-3 text-sm text-red-200">
+                {{ errorMessage() }}
+            </div>
+            }
+
+            <div class="mb-6">
+                <span class="block text-sm text-gray-500">CURRENT STATUS</span>
+                <span class="text-xl font-bold uppercase">{{ contract().status }}</span>
+            </div>
+
+            @if (canSubmitForReview() || canReview()) {
+            <div class="flex flex-wrap gap-2">
+                @if (canSubmitForReview()) {
+                <button (click)="updateStatus('pending_review')" [disabled]="isUpdating()"
+                    class="rounded bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60">
+                    Submit for Review
+                </button>
+                }
+
+                @if (canReview()) {
+                <button (click)="updateStatus('approved')" [disabled]="isUpdating()"
+                    class="rounded bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
+                    Approve
+                </button>
+                <button (click)="updateStatus('rejected')" [disabled]="isUpdating()"
+                    class="rounded bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60">
+                    Reject
+                </button>
+                }
+
+                @if (isUpdating()) {
+                <span class="self-center text-sm text-gray-400">Updating status...</span>
+                }
+            </div>
+            } @else if (showStatusLockedMessage()) {
+            <div class="rounded border border-yellow-700 bg-yellow-900/30 p-4">
+                <p class="text-sm italic text-yellow-500">
+                    Review actions are unavailable for this contract in its current state.
+                </p>
+            </div>
+            }
+        </div>
+
+        <div class="rounded bg-gray-800 p-6 shadow">
+            <h2 class="mb-4 text-xl font-bold">Audit History</h2>
+
+            @if (contract().audit_logs && contract().audit_logs.length > 0) {
+            <div class="space-y-4">
+                @for (log of contract().audit_logs; track log.id) {
+                <div class="border-l-2 border-blue-500 bg-gray-700/50 py-2 pl-4 transition hover:bg-gray-700">
+                    <p class="text-sm font-bold text-blue-400">{{ log.action }}</p>
+                    <p class="text-xs text-gray-400">Performed by: {{ log.performed_by }}</p>
+                    <p class="text-xs text-gray-500">{{ log.performed_at | date:'medium' }}</p>
+                </div>
+                }
+            </div>
+            } @else {
+            <p class="italic text-gray-500">No audit logs available for this contract.</p>
+            }
+        </div>
+
+    </div>
+</div>
+} @else {
+<div class="flex min-h-screen items-center justify-center bg-gray-900">
+    <p class="animate-pulse text-blue-400">Loading contract details...</p>
+</div>
+}

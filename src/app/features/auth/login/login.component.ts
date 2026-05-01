@@ -6,9 +6,9 @@ import { Router, RouterLink } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   template: `
-    <div class="min-h-screen flex flex-col items-center justify-center bg-gray-900 p-4">
+    <div class="flex min-h-[calc(100vh-81px)] flex-col items-center justify-center p-4">
       <!-- Login Form -->
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="bg-gray-800 p-8 rounded-lg shadow-xl w-full max-w-md">
         <h2 class="text-white text-2xl font-bold mb-6 text-center">Contractzy Login</h2>
@@ -29,10 +29,6 @@ import { Router, RouterLink } from '@angular/router';
                 class="w-full bg-blue-600 text-white py-3 rounded font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">
           Sign In
         </button>
-
-        <p class="text-gray-400 mt-6 text-sm text-center">
-          Don't have an account? <a routerLink="/auth/signup" class="text-blue-400 hover:underline">Sign Up</a>
-        </p>
       </form>
 
       <!-- Seeded Credentials Helper -->

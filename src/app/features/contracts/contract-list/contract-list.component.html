@@ -1,12 +1,21 @@
-<div class="p-6 bg-gray-900 min-h-screen text-white">
-    <div class="flex justify-between items-center mb-6">
+<div class="text-white">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <h1 class="text-2xl font-bold">Contracts</h1>
-        <!-- RBAC: Viewers cannot see Create button -->
-        @if (authService.user()?.role !== 'viewer') {
-        <button routerLink="create" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
-            + New Contract
-        </button>
-        }
+
+        <div class="flex w-full md:w-auto gap-3">
+            <!-- Search Input -->
+            <div class="relative flex-grow">
+                <input type="text" [ngModel]="searchQuery()" (ngModelChange)="onSearch($event)"
+                    placeholder="Search by title..."
+                    class="w-full rounded bg-gray-700 px-4 py-2 text-sm text-white border border-gray-600 focus:border-blue-500 outline-none" />
+            </div>
+
+            @if (authService.user()?.role !== 'viewer') {
+            <button routerLink="create" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap">
+                + New Contract
+            </button>
+            }
+        </div>
     </div>
 
     @if (errorMessage()) {
@@ -15,7 +24,7 @@
     </div>
     }
 
-    <div class="overflow-x-auto bg-gray-800 rounded-lg">
+    <div class="overflow-x-auto bg-gray-800 rounded-lg shadow-lg">
         <table class="w-full text-left">
             <thead class="border-b border-gray-700 uppercase text-xs text-gray-400">
                 <tr>
@@ -26,43 +35,72 @@
             </thead>
             <tbody>
                 @for (item of contracts(); track item.id) {
-                <tr class="border-b border-gray-700 hover:bg-gray-750">
-                    <td class="p-4">{{ item.title }}</td>
+                <tr class="border-b border-gray-700 hover:bg-gray-750 transition-colors">
+                    <td class="p-4 font-medium">{{ item.title }}</td>
                     <td class="p-4">
-                        <span [class]="'px-2 py-1 rounded text-xs ' + item.status">
+                        <span
+                            class="inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide"
+                            [class]="statusBadgeClass(item.status)"
+                        >
                             {{ item.status | uppercase }}
                         </span>
                     </td>
                     <td class="p-4">
                         <div class="flex flex-wrap items-center gap-3">
-                            <button [routerLink]="[item.id]" class="text-blue-400 hover:underline">View</button>
+                            <button [routerLink]="[item.id]"
+                                class="text-blue-400 hover:text-blue-300 text-sm font-medium">View</button>
 
                             @if (canSubmitForReview(item)) {
                             <button (click)="updateStatus(item.id, 'pending_review')" [disabled]="isUpdating(item.id)"
-                                class="rounded bg-amber-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-60">
+                                class="rounded bg-amber-600 px-3 py-1 text-xs font-semibold text-white hover:bg-amber-700 disabled:opacity-50">
                                 Submit for Review
                             </button>
                             }
 
                             @if (canReview(item)) {
                             <button (click)="updateStatus(item.id, 'approved')" [disabled]="isUpdating(item.id)"
-                                class="rounded bg-emerald-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60">
+                                class="rounded bg-emerald-600 px-3 py-1 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50">
                                 Approve
                             </button>
                             <button (click)="updateStatus(item.id, 'rejected')" [disabled]="isUpdating(item.id)"
-                                class="rounded bg-rose-600 px-3 py-1 text-xs font-semibold text-white transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-60">
+                                class="rounded bg-rose-600 px-3 py-1 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50">
                                 Reject
                             </button>
                             }
 
                             @if (isUpdating(item.id)) {
-                            <span class="text-xs text-gray-400">Updating...</span>
+                            <span class="text-[10px] text-blue-400 animate-pulse">Syncing...</span>
                             }
                         </div>
+                    </td>
+                </tr>
+                } @empty {
+                <tr>
+                    <td colspan="3" class="p-10 text-center text-gray-500">
+                        No contracts found matching your search.
                     </td>
                 </tr>
                 }
             </tbody>
         </table>
+
+        <!-- Pagination Controls -->
+        @if (totalPages() > 1) {
+        <div class="flex items-center justify-between border-t border-gray-700 p-4 bg-gray-800/50">
+            <span class="text-xs text-gray-400">
+                Showing page {{ currentPage() }} of {{ totalPages() }} ({{ totalItems() }} total)
+            </span>
+            <div class="flex gap-2">
+                <button (click)="changePage(currentPage() - 1)" [disabled]="currentPage() === 1"
+                    class="px-3 py-1 text-xs bg-gray-700 rounded disabled:opacity-30 hover:bg-gray-600">
+                    Previous
+                </button>
+                <button (click)="changePage(currentPage() + 1)" [disabled]="currentPage() === totalPages()"
+                    class="px-3 py-1 text-xs bg-gray-700 rounded disabled:opacity-30 hover:bg-gray-600">
+                    Next
+                </button>
+            </div>
+        </div>
+        }
     </div>
 </div>

@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
   CONTRACTS: {
     LIST: 'contracts',
     DETAIL: (id: string) => `contracts/${id}`,
+    UPDATE: (id: string) => `contracts/${id}`,
     UPDATE_STATUS: (id: string) => `contracts/${id}/status`,
   }
 };

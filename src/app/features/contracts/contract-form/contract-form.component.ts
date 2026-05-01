@@ -1,15 +1,15 @@
 import { Component, inject } from '@angular/core';
 import { NonNullableFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 import { API_ENDPOINTS } from '../../../core/constants/api-endpoints';
 
 @Component({
   selector: 'app-contract-form',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   template: `
-    <div class="p-6 bg-gray-900 min-h-screen">
+    <div>
       <form [formGroup]="contractForm" (ngSubmit)="submit()" class="max-w-2xl mx-auto bg-gray-800 p-8 rounded shadow">
         <h2 class="text-white text-xl mb-6">Create New Contract</h2>
         
